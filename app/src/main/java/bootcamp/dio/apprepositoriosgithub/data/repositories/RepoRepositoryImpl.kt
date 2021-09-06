@@ -1,0 +1,29 @@
+package bootcamp.dio.apprepositoriosgithub.data.repositories
+
+import bootcamp.dio.apprepositoriosgithub.core.RemoteException
+import bootcamp.dio.apprepositoriosgithub.data.services.GitHubService
+import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+
+class RepoRepositoryImpl(private val service: GitHubService) : RepoRepository {
+
+    override suspend fun listRepositories(user: String) = flow {
+        try {
+            val repoList = service.listRepositories(user)
+            emit(repoList)
+        } catch (ex: HttpException) {
+            throw RemoteException(ex.message ?: "Não foi possivel fazer a busca no momento!")
+        }
+    }
+
+    override suspend fun listUserInfos(user: String) = flow {
+        try {
+            val owner = service.listUserInfos(user)
+            emit(owner)
+        }catch (ex: HttpException){
+            throw RemoteException(ex.message ?: "Não foi possível a busca no momento.")
+        }catch (ex: Throwable){
+            throw RemoteException(ex.message ?: "Erro na busca.")
+        }
+    }
+}
